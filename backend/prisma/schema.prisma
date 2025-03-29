@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+///////////////////////////////////
+///////////////////////////////////
+
+model Tenant {
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  ownerId   String    @unique
+  owner     User      @relation("TenantOwner", fields: [ownerId], references: [id])
+  users     User[]    @relation("TenantUsers") // usuarios que trabajan en el tenant
+  products  Product[]
+  orders    Order[]
+  createdAt DateTime  @default(now())
+}
+
+model User {
+  id          String     @id @default(cuid())
+  email       String     @unique
+  password    String
+  roles       UserRole[]
+  tenantId    String?
+  tenant      Tenant?    @relation("TenantUsers", fields: [tenantId], references: [id])
+  ownedTenant Tenant?    @relation("TenantOwner") // si es el dueño
+  orders      Order[]
+  createdAt   DateTime   @default(now())
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  stock       Int
+  imageUrl    String
+  tenantId    String
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime    @default(now())
+  OrderItem   OrderItem[]
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  tenantId  String
+  tenant    Tenant      @relation(fields: [tenantId], references: [id])
+  items     OrderItem[]
+  total     Float
+  status    String
+  createdAt DateTime    @default(now())
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+}
+
+model RoleEntity {
+  id    String     @id @default(cuid())
+  name  Role       @unique
+  users UserRole[]
+}
+
+model UserRole {
+  id     String @id @default(cuid())
+  userId String
+  roleId String
+
+  user User       @relation(fields: [userId], references: [id])
+  role RoleEntity @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, roleId])
+}
+
+///////////////////////////////////
+///////////////////////////////////
+
+enum Role {
+  ADMIN
+  VENDOR
+  CUSTOMER
+}
