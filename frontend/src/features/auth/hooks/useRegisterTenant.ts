@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { api } from "../../../services";
-
-interface RegisterTenantDto {
-  email: string;
-  password: string;
-  tenantName: string;
-  tenantSlug: string;
-}
+import { RegisterTenantDto } from "../types/Tenant";
 
 export const useRegisterTenant = () => {
   const [loading, setLoading] = useState(false);
