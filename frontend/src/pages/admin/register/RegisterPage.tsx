@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRegisterTenant } from "../../features/auth/hooks";
+import { useRegisterTenant } from "../../../features/auth/hooks";
 
 const RegisterPage = () => {
   const { registerTenant, loading, error } = useRegisterTenant();

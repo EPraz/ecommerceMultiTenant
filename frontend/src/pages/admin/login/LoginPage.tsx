@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Role } from "../../constants";
-import { useLogin } from "../../features/auth/hooks";
-import { LoginRedirectModal } from "../../features/auth/components";
+import { Role } from "../../../constants";
+import { useLogin } from "../../../features/auth/hooks";
+import { LoginRedirectModal } from "../../../features/auth/components";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
